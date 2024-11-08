@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Macroeconomic Researcher Dashboard</title>
     <link rel="stylesheet" href="styles.css">
-    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
 </head>
 <body>
 
@@ -64,12 +63,34 @@
                 
             </div>
 
-            <!-- Annotation Button -->
-            <button class="annotation-button">Annotation</button>
                 <!-- GPT Icon -->
                 <img id= "gptIcon" src="Images/gpt .png" alt="GPT Icon">
+           
+                <div class="annotation-dropdown">
+                    <!-- Annotation Button -->
+                    <button class="annotation-button" onclick="toggleDropdown()">Annotation</button>
+                    
+                    <!-- Dropdown Options -->
+                    <div id="dropdownOptions" class="dropdown-content" style="display: none;">
+                        <label for="category">Select Category:</label>
+                        <select id="category" onchange="populateSubsets()">
+                            <option value="">Choose a category</option>
+                            <option value="Macroeconomic">Macroeconomic (USD)</option>
+                            <option value="Agricultural">Agricultural</option>
+                            <option value="Debt Services">Debt Services</option>
+                        </select>
                 
-
+                        <label for="subset">Select Subset:</label>
+                        <select id="subset">
+                            <option value="">Choose a subset</option>
+                        </select>
+                
+                        <label for="comment">Comment:</label>
+                        <textarea id="comment" placeholder="Write your comment here"></textarea>
+                
+                        <button id = "SubmitAnnotation" onclick="submitAnnotation()">Submit</button>
+                    </div>
+                </div>
             
         </div>
 
@@ -81,7 +102,9 @@
             </div>
         </footer>
     </div>
+    
 
     <script src="script.js"></script>
+
 </body>
 </html>
