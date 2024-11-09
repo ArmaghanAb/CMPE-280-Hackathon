@@ -148,9 +148,8 @@ header .title {
 /* Annotation Button */
 .annotation-button {
     position: absolute;
+    top: 20px;
     right: 20px;
-    margin:50px;
-    bottom:300px;
     padding: 10px 15px;
     background-color: #3c84e9;
     color: white;
@@ -158,12 +157,12 @@ header .title {
     border-radius: 4px;
     font-size: 14px;
     cursor: pointer;
+    z-index: 10;
 }
 
 /* Dropdown Container */
 .annotation-dropdown {
-    position: relative;
-    display: inline-block;
+    margin-top: 20px;
 }
 
 #SubmitAnnotation{
@@ -231,4 +230,14 @@ footer {
 .footer-content {
     font-size: 14px;
     
+}
+
+#time-series-graph-container {
+    position: relative;
+    /* border: 1px solid red; */
+    display: block;
+}
+
+#sankey-chart-container {
+    display: none;
 }
