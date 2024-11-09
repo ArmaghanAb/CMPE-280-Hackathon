@@ -74,3 +74,52 @@ document.getElementById('importExportButton').addEventListener('click', function
     }
 });
 
+async function loadSankeyData() {
+    const country = document.getElementById("two-country-selector").value;
+    const year = document.getElementById("year-selector").value;
+    const crop = document.getElementById("crop-selector").value;
+
+    if (!country || !year || !crop) {
+        alert("Please select a country, year, and crop.");
+        return;
+    }
+
+    console.log("Selected Values:", country, year, crop);
+    const response = await fetch(`http://localhost:8000/sankey-data?country=${country}&year=${year}&crop=${crop}`);
+    const data = await response.json();
+
+    const sankeyData = {
+        type: "sankey",
+        orientation: "h",
+        node: {
+            pad: 15,
+            thickness: 20,
+            line: {
+                color: "black",
+                width: 0.5
+            },
+            label: [country, ...data.target],
+            color: "blue"
+        },
+        link: {
+            source: Array(data.target.length).fill(0),  // All links start from index 0 (the selected country)
+            target: data.target.map((_, i) => i + 1),   // Target nodes start from index 1 onwards
+            value: data.value
+        }
+    };
+
+    const layout = {
+        title: `${country} ${crop} Imports (${year})`,
+        font: {
+            size: 10
+        }
+    };
+
+    Plotly.newPlot("sankey-chart-container", [sankeyData], layout);
+}
+
+// Event listener for updating the chart
+document.getElementById("country-selector").addEventListener("change", loadSankeyData);
+document.getElementById("year-selector").addEventListener("change", loadSankeyData);
+document.getElementById("crop-selector").addEventListener("change", loadSankeyData);
+

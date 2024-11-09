@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Macroeconomic Researcher Dashboard</title>
     <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
 </head>
 <body>
 
@@ -91,8 +92,34 @@
             </div>
 
             <div id="sankey-chart-container">
-                Sankey Chart
+                <label for="two-country-selector">Select Country:</label>
+                <select id="two-country-selector">
+                    <option value="">Select Country</option>
+                    <option value="Egypt">Egypt</option>
+                    <option value="Saudi Arabia">Saudi Arabia</option>
+                </select>
+                
+                <label for="year-selector">Select Year:</label>
+                <select id="year-selector">
+                    <option value="">Select Year</option>
+                    <!-- Populate with available years dynamically or add manually -->
+                    <option value="2020">2020</option>
+                    <option value="2021">2021</option>
+                    <option value="2022">2022</option>
+                </select>
+                
+                <label for="crop-selector">Select Crop:</label>
+                <select id="crop-selector">
+                    <option value="">Select Crop</option>
+                    <option value="Wheat">Wheat</option>
+                    <option value="Maize (corn)">Maize (corn)</option>
+                    <option value="Rice, milled">Rice</option>
+                    <!-- Add more crop options as needed -->
+                </select>
+                
+                <div id="sankey-chart"></div>
             </div>
+            
 
             <!-- GPT Icon -->
             <img id= "gptIcon" src="Images/gpt .png" alt="GPT Icon">
