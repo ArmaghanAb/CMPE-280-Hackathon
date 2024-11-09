@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Macroeconomic Researcher Dashboard</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+</head>
+<body>
+
+
+    <div class="dashboard">
+        <!-- Sidebar -->
+        <div class="sidebar"  id="sidebar">
+            <div class="logo">Logo</div>
+            <h2>Macroeconomic (USD)</h2>
+            <ul>
+                <li draggable="true" ondragstart="drag(event)" id="gdp">GDP (USD)</li>
+                <li draggable="true" ondragstart="drag(event)" id="fdi-inflows">FDI Inflows (USD)</li>
+                <li draggable="true" ondragstart="drag(event)" id="fdi-outflows">FDI Outflows (USD)</li>
+            </ul>
+            <h2>Agricultural</h2>
+            <ul>
+                <li draggable="true" ondragstart="drag(event)" id="agri-contribution">Contribution of Agri (% GDP)</li>
+                <li draggable="true" ondragstart="drag(event)" id="credit">Credit</li>
+                <li draggable="true" ondragstart="drag(event)" id="fertilizers">Fertilizers</li>
+                <li draggable="true" ondragstart="drag(event)" id="fertilizers-prod">Fertilizers PROD</li>
+            </ul>
+            <h2>Debt Services</h2>
+            <ul>
+                <li draggable="true" ondragstart="drag(event)" id="reservers">Reservers</li>
+                <li draggable="true" ondragstart="drag(event)" id="gni">GNI</li>
+                <li draggable="true" ondragstart="drag(event)" id="total-debts">Total Debts (%)</li>
+            </ul>
+
+            <button class="import-export">Import-Export</button>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+
+            <header>
+                <div class="title">Macroeconomic Researcher Food Security Time Series and Large Language Chat GPT Dashboard</div>
+                <select id="country-selector" onchange="updateCountry()">
+                    <option value="">Select Country</option>
+                    <option value="China">China</option>
+                    <option value="India">India</option>
+                    <option value="USA">USA</option>
+                </select>
+                <img id="country-flag" src="" alt="Country Flag" style="width: 40px; height: 25px; display: none;">
+            </header>
+           
+
+            <!-- Time Slider and Play Button -->
+            <div class="time-slider-container">
+                <label for="time-slider">Years</label>
+                <input type="range" id="time-slider" min="1990" max="2024" step="1" value="1990">
+                <button class="play-button" onclick="togglePlay()">▶️</button>
+            </div>
+
+            <!-- Chart Drop Area -->
+            <div class="charts" id="chart-drop-area" ondrop="drop(event)" ondragover="allowDrop(event)">
+                
+            </div>
+
+            <!-- Annotation Button -->
+            <button class="annotation-button">Annotation</button>
+                <!-- GPT Icon -->
+                <img id= "gptIcon" src="Images/gpt .png" alt="GPT Icon">
+                
+
+            
+        </div>
+
+        <!-- Footer -->
+        <footer>
+            <div class="footer-content">
+                Footer  
+             
+            </div>
+        </footer>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
