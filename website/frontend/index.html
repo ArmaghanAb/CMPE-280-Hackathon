@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Macroeconomic Researcher Dashboard</title>
-    <link rel="stylesheet" href="/280_hackathon/website/frontend/styles.css">
+    <link rel="stylesheet" href="styles.css">
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
 </head>
 <body>
@@ -61,7 +61,6 @@
                 <div class="charts" id="chart-drop-area" ondrop="drop(event)" ondragover="allowDrop(event)">
                     Time Series Chart
                 </div>
-
                 <!-- Annotation Dropdown -->
                 <div class="annotation-dropdown">
                     <!-- Annotation Button -->
@@ -88,27 +87,74 @@
                         <button id = "SubmitAnnotation" onclick="submitAnnotation()">Submit</button>
                     </div>
                 </div>
+                                <!-- Comments Display Area -->
+                <div id="comments" class="comments-section">
+                    <strong>Comments:</strong>
+                    <!-- Comments will be dynamically inserted here -->
+                </div>
+               
             </div>
+            <!-- Insert Chat Interface here -->
+            <div class="chat-icon" onclick="toggleChat()">
+                <img src="./Images/gpt.png" width="30" height="30" alt="GPT Icon">
+            </div>
+
+            <div class="chat-modal" id="chatModal">
+                <div class="modal-header">
+                    <h3>FAO Q&A Assistant</h3>
+                    <button class="close-btn" onclick="toggleChat()">X</button>
+                </div>
+            </div>
+           
 
             <div id="sankey-chart-container">
-                Sankey Chart
+                <label for="two-country-selector">Select Country:</label>
+                <select id="two-country-selector">
+                    <option value="">Select Country</option>
+                    <option value="Egypt">Egypt</option>
+                    <option value="Saudi Arabia">Saudi Arabia</option>
+                </select>
+                
+                <label for="year-selector">Select Year:</label>
+                <select id="year-selector">
+                    <option value="">Select Year</option>
+                    <!-- Populate with available years dynamically or add manually -->
+                    <option value="2020">2020</option>
+                    <option value="2021">2021</option>
+                    <option value="2022">2022</option>
+                </select>
+                
+                <label for="crop-selector">Select Crop:</label>
+                <select id="crop-selector">
+                    <option value="">Select Crop</option>
+                    <option value="Wheat">Wheat</option>
+                    <option value="Maize (corn)">Maize (corn)</option>
+                    <option value="Rice, milled">Rice</option>
+                    <!-- Add more crop options as needed -->
+                </select>
+                <div id="import-export-container">
+                    <div id="sankey-chart"></div>
+                    <div id="pie-chart"></div>
+                </div>
             </div>
+            
 
             <!-- GPT Icon -->
-            <img id= "gptIcon" src="/gpt .png" alt="GPT Icon">
-        </div>
+            <!-- <img id= "gptIcon" src="Images/gpt .png" alt="GPT Icon"> -->
+
+            
 
         <!-- Footer -->
-        <footer>
-            <div class="footer-content">
-                Footer  
-             
-            </div>
-        </footer>
-    </div>
+            <footer>
+                <div class="footer-content">
+                    Footer  
+                
+                </div>
+            </footer>
+        </div>
     
 
-    <script src="/280_hackathon/website/frontend/script.js"></script>
+    <script src="./script.js"></script>
 
     
 </body>
