@@ -74,7 +74,7 @@ document.getElementById('importExportButton').addEventListener('click', function
     }
 });
 
-async function loadSankeyData() {
+async function loadGraphs() {
     const country = document.getElementById("two-country-selector").value;
     const year = document.getElementById("year-selector").value;
     const crop = document.getElementById("crop-selector").value;
@@ -99,7 +99,7 @@ async function loadSankeyData() {
 
     // Generate colors for all nodes
     const nodeColors = ["lightblue"];
-    for (let i = 0; i < totalNodes; i++) {
+    for (let i = 0; i < data.target.length; i++) {
         nodeColors.push(generateColor(i, totalNodes));
     }
 
@@ -124,19 +124,81 @@ async function loadSankeyData() {
         }
     };
 
-    const layout = {
+    const sankeyLayout = {
         title: `${country} ${crop} Imports (${year})`,
-        font: {
-            size: 10
-        }
+        font: { size: 10 }
     };
 
-    Plotly.newPlot("sankey-chart", [sankeyData], layout);
+    // Plot the Sankey diagram
+    Plotly.newPlot("sankey-chart", [sankeyData], sankeyLayout);
+
+    // **Process data for the pie chart**
+
+    // Calculate total import value
+    const totalValue = data.value.reduce((sum, val) => sum + val, 0);
+
+    // Arrays to hold processed values and labels
+    const pieValues = [];
+    const pieLabels = [];
+    const pieColors = [];
+
+    // Variables to accumulate 'Others' category
+    let othersValue = 0;
+    const othersColor = 'grey';
+
+    // Process each slice
+    for (let i = 0; i < data.value.length; i++) {
+        const percentage = (data.value[i] / totalValue) * 100;
+
+        if (percentage < 1) {
+            // Accumulate the values for 'Others'
+            othersValue += data.value[i];
+        } else {
+            // Include slices with percentage >= 1%
+            pieValues.push(data.value[i]);
+            pieLabels.push(data.target[i]);
+            pieColors.push(nodeColors[i + 1]); // Adjust index for colors
+        }
+    }
+
+    // Add 'Others' category if applicable
+    if (othersValue > 0) {
+        pieValues.push(othersValue);
+        pieLabels.push('Others');
+        pieColors.push(othersColor);
+    }
+
+    // Prepare data for the pie chart
+    const pieData = [{
+        values: pieValues,
+        labels: pieLabels,
+        type: 'pie',
+        marker: {
+            colors: pieColors
+        },
+        textinfo: 'label+percent',
+        textposition: 'inside',
+        insidetextorientation: 'radial',
+        hoverinfo: 'label+value+percent',
+        textfont: {
+            size: 12,
+            color: 'white'
+        }
+    }];
+
+    const pieLayout = {
+        title: `Import Shares of ${crop} to ${country} (${year})`,
+        height: 400,
+        width: 400,
+        showlegend: false
+    };
+
+    // Plot the pie chart
+    Plotly.newPlot("pie-chart", pieData, pieLayout);
 }
 
 // Event listener for updating the chart
-document.getElementById("two-country-selector").addEventListener("change", loadSankeyData);
-document.getElementById("year-selector").addEventListener("change", loadSankeyData);
-document.getElementById("crop-selector").addEventListener("change", loadSankeyData);
-
+document.getElementById("two-country-selector").addEventListener("change", loadGraphs);
+document.getElementById("year-selector").addEventListener("change", loadGraphs);
+document.getElementById("crop-selector").addEventListener("change", loadGraphs);
 
