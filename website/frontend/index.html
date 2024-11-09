@@ -63,8 +63,22 @@
                 
             </div>
 
-                <!-- GPT Icon -->
-                <img id= "gptIcon" src="Images/gpt .png" alt="GPT Icon">
+               <!-- Insert Chat Interface here -->
+            <div class="chat-icon" onclick="toggleChat()">
+                <img src="Images/gpt.png" width="30" height="30" alt="GPT Icon">
+            </div>
+
+            <div class="chat-modal" id="chatModal">
+                <div class="modal-header">
+                    <h3>FAO Q&A Assistant</h3>
+                    <button class="close-btn" onclick="toggleChat()">X</button>
+                </div>
+                <div class="chat-box" id="chat-box"></div>
+                <div class="chat-input">
+                    <input type="text" id="user-input" placeholder="Type your message..." onkeypress="handleKeyPress(event)">
+                    <button class="send-btn" onclick="askQuestion()">></button>
+                </div>
+            </div>
            
                 <div class="annotation-dropdown">
                     <!-- Annotation Button -->
