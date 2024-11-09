@@ -148,9 +148,8 @@ header .title {
 /* Annotation Button */
 .annotation-button {
     position: absolute;
+    top: 20px;
     right: 20px;
-    margin:50px;
-    bottom:300px;
     padding: 10px 15px;
     background-color: #3c84e9;
     color: white;
@@ -158,12 +157,12 @@ header .title {
     border-radius: 4px;
     font-size: 14px;
     cursor: pointer;
+    z-index: 10;
 }
 
 /* Dropdown Container */
 .annotation-dropdown {
-    position: relative;
-    display: inline-block;
+    margin-top: 20px;
 }
 
 #SubmitAnnotation{
@@ -266,6 +265,25 @@ footer {
     transform: scale(1.1);
 }
 
+/* Container for Sankey and Pie charts */
+#import-export-container {
+    display: flex;
+    width: 100%;
+}
+
+/* Individual chart containers */
+#import-export-container > div {
+    flex: 1 1 50%;
+    box-sizing: border-box;
+    padding: 10px; /* Optional: Add padding if desired */
+}
+
+/* Ensure the charts fill their containers */
+#sankey-chart, #pie-chart {
+    width: 100%;
+    height: 100%;
+    min-height: 400px; /* Set a minimum height */
+}
 .chat-modal {
     position: fixed;
     bottom: 90px;
@@ -353,6 +371,17 @@ footer {
     display: flex;
     animation: fadeIn 0.3s ease;
 }
+
+#time-series-graph-container {
+    position: relative;
+    /* border: 1px solid red; */
+    display: block;
+}
+
+#sankey-chart-container {
+    display: none;
+}
+
 .close-btn {
     background-color: #007bff;
     color: white;
