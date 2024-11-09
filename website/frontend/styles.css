@@ -148,8 +148,9 @@ header .title {
 /* Annotation Button */
 .annotation-button {
     position: absolute;
-    top: 20px;
     right: 20px;
+    margin:50px;
+    bottom:300px;
     padding: 10px 15px;
     background-color: #3c84e9;
     color: white;
@@ -157,19 +158,19 @@ header .title {
     border-radius: 4px;
     font-size: 14px;
     cursor: pointer;
-    z-index: 10;
 }
 
 /* Dropdown Container */
 .annotation-dropdown {
-    margin-top: 20px;
+    position: relative;
+    display: inline-block;
 }
 
 #SubmitAnnotation{
     background-color: #1a519e;
     color: white;
     border: 1px solid black;
-    margin:10px;
+    margin:5px;
     border-radius: 4px;
     font-size: 12px;
     cursor: pointer;
@@ -218,6 +219,16 @@ header .title {
     cursor: pointer;
 }
 
+.comments-section {
+    margin-top: 20px;
+    padding: 10px;
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+
+
 /* Footer */
 footer {
     grid-column: 1 / -1;
@@ -232,14 +243,27 @@ footer {
     
 }
 
-#time-series-graph-container {
-    position: relative;
-    /* border: 1px solid red; */
-    display: block;
+/* Existing styles in styles.css */
+
+/* Chat UI Styles from chat_ui.css */
+.chat-icon {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    transition: transform 0.3s ease;
+    z-index: 1000;
 }
 
-#sankey-chart-container {
-    display: none;
+.chat-icon:hover {
+    transform: scale(1.1);
 }
 
 /* Container for Sankey and Pie charts */
@@ -261,3 +285,91 @@ footer {
     height: 100%;
     min-height: 400px; /* Set a minimum height */
 }
+.chat-modal {
+    position: fixed;
+    bottom: 90px;
+    right: 20px;
+    width: 500px;
+    height: 800px;
+    background-color: white;
+    border-radius: 12px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    display: none;
+    flex-direction: column;
+    z-index: 999;
+}
+
+.modal-header {
+    padding: 15px;
+    background-color: #007bff;
+    color: white;
+    border-radius: 12px 12px 0 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.chat-box {
+    flex-grow: 1;
+    padding: 15px;
+    overflow-y: auto;
+    background-color: #f8f9fa;
+}
+
+.chat-input {
+    display: flex;
+    padding: 15px;
+    border-top: 1px solid #dee2e6;
+    background-color: white;
+    border-radius: 0 0 12px 12px;
+}
+
+#user-input {
+    flex-grow: 1;
+    padding: 8px 12px;
+    border: 1px solid #dee2e6;
+    border-radius: 20px;
+    margin-right: 10px;
+    outline: none;
+}
+
+.send-btn {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 35px;
+    height: 35px;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.chat-bubble {
+    max-width: 80%;
+    margin: 8px 0;
+    padding: 10px 15px;
+    border-radius: 15px;
+    word-wrap: break-word;
+}
+
+.user-bubble {
+    background-color: #007bff;
+    color: white;
+    margin-left: auto;
+    border-radius: 15px 15px 0 15px;
+}
+
+.bot-bubble {
+    background-color: #e9ecef;
+    color: #212529;
+    margin-right: auto;
+    border-radius: 15px 15px 15px 0;
+}
+
+.show-modal {
+    display: flex;
+    animation: fadeIn 0.3s ease;
+}
+

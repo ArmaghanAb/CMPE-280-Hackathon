@@ -1,3 +1,5 @@
+
+
 /************************************************************************************** */
 
 // Toggle dropdown visibility
@@ -56,21 +58,17 @@ function populateSubsets() {
             subsetSelect.appendChild(option);
         });
     }
+    // Clear comments display if category changes
+    document.getElementById("comments").innerHTML = "";
 }
 
-// Toggle between Sankey chart and time series graph
-document.getElementById('importExportButton').addEventListener('click', function() {
-    const timeSeriesContainer = document.getElementById('time-series-graph-container');
-    const sankeyContainer = document.getElementById('sankey-chart-container');
-    
-    if (sankeyContainer.style.display === 'none' || sankeyContainer.style.display === '') {
-        // Show the Sankey chart and hide the time series graph
-        sankeyContainer.style.display = 'block';
-        timeSeriesContainer.style.display = 'none';
-    } else {
-        // Hide the Sankey chart and show the time series graph
-        sankeyContainer.style.display = 'none';
-        timeSeriesContainer.style.display = 'block';
+// Display comments when a subset is selected
+document.getElementById("subset").addEventListener("change", () => {
+    const category = document.getElementById("category").value;
+    const subset = document.getElementById("subset").value;
+
+    if (subset) {
+        displayComments(category, subset);
     }
 });
 
@@ -202,3 +200,111 @@ document.getElementById("two-country-selector").addEventListener("change", loadG
 document.getElementById("year-selector").addEventListener("change", loadGraphs);
 document.getElementById("crop-selector").addEventListener("change", loadGraphs);
 
+// Save a comment to localStorage
+function saveComment(category, subset, comment) {
+    if (!category || !subset || !comment) {
+        alert("Please fill out all fields before submitting.");
+        return;
+    }
+
+    const key = `${category}-${subset}`;
+    let comments = JSON.parse(localStorage.getItem(key)) || [];
+    comments.push(comment);
+    localStorage.setItem(key, JSON.stringify(comments));
+    alert("Comment saved successfully!");
+    displayComments(category, subset); 
+}
+
+// Retrieve comments for a specific category and subset
+function getComments(category, subset) {
+    const key = `${category}-${subset}`;
+    const comments = JSON.parse(localStorage.getItem(key)) || [];
+    return comments;
+}
+
+// Display comments on the page for a specific category and subset
+function displayComments(category, subset) {
+    const comments = getComments(category, subset);
+    const commentsDiv = document.getElementById("comments");
+    
+    commentsDiv.innerHTML = "<strong>Comments:</strong><br>";
+    comments.forEach(comment => {
+        commentsDiv.innerHTML += `<p>${comment}</p>`;
+    });
+}
+
+// Function to handle comment submission from the form
+function submitAnnotation() {
+    const category = document.getElementById("category").value;
+    const subset = document.getElementById("subset").value;
+    const comment = document.getElementById("comment").value;
+
+    saveComment(category, subset, comment);
+    
+    // Clear the comment input field after submission
+    document.getElementById("comment").value = "";
+}
+
+
+
+// Chat UI functions 
+function toggleChat() {
+    const modal = document.getElementById('chatModal');
+    modal.classList.toggle('show-modal');
+}
+
+function handleKeyPress(event) {
+    if (event.key === 'Enter') {
+        askQuestion();
+    }
+}
+
+async function askQuestion() {
+    const inputElement = document.getElementById("user-input");
+    const question = inputElement.value.trim();
+    if (question === "") return;
+
+    const chatBox = document.getElementById("chat-box");
+    const userBubble = document.createElement("div");
+    userBubble.className = "chat-bubble user-bubble";
+    userBubble.textContent = question;
+    chatBox.appendChild(userBubble);
+
+    inputElement.value = "";
+
+    const botBubble = document.createElement("div");
+    botBubble.className = "chat-bubble bot-bubble";
+    botBubble.textContent = "Thinking....";
+    chatBox.appendChild(botBubble);
+
+    chatBox.scrollTop = chatBox.scrollHeight;
+
+    try {
+        const response = await fetch("http://127.0.0.1:8000/query", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ question: question }),
+        });
+
+        const reader = response.body.getReader();
+        const decoder = new TextDecoder("utf-8");
+
+        while (true) {
+            const { done, value } = await reader.read();
+            if (done) break;
+
+            const chunk = decoder.decode(value, { stream: true });
+            if (botBubble.textContent === "Thinking....") {
+                botBubble.textContent = '';
+            }
+            botBubble.textContent += chunk;
+
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+    } catch (error) {
+        console.error("Error fetching response:", error);
+        botBubble.textContent = "An error occurred. Please try again.";
+    }
+
+    chatBox.scrollTop = chatBox.scrollHeight;
+}
