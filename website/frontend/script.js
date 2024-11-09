@@ -1,5 +1,3 @@
-
-
 /************************************************************************************** */
 
 // Toggle dropdown visibility
@@ -308,3 +306,19 @@ async function askQuestion() {
 
     chatBox.scrollTop = chatBox.scrollHeight;
 }
+// Toggle between Sankey chart and time series graph
+document.getElementById('importExportButton').addEventListener('click', function() {
+    const timeSeriesContainer = document.getElementById('time-series-graph-container');
+    const sankeyContainer = document.getElementById('sankey-chart-container');
+    
+    if (sankeyContainer.style.display === 'none' || sankeyContainer.style.display === '') {
+        // Show the Sankey chart and hide the time series graph
+        sankeyContainer.style.display = 'block';
+        timeSeriesContainer.style.display = 'none';
+    } else {
+        // Hide the Sankey chart and show the time series graph
+        sankeyContainer.style.display = 'none';
+        timeSeriesContainer.style.display = 'block';
+    }
+});
+
