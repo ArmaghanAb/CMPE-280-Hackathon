@@ -148,8 +148,9 @@ header .title {
 /* Annotation Button */
 .annotation-button {
     position: absolute;
-    top: 20px;
     right: 20px;
+    margin:50px;
+    bottom:300px;
     padding: 10px 15px;
     background-color: #3c84e9;
     color: white;
@@ -157,19 +158,19 @@ header .title {
     border-radius: 4px;
     font-size: 14px;
     cursor: pointer;
-    z-index: 10;
 }
 
 /* Dropdown Container */
 .annotation-dropdown {
-    margin-top: 20px;
+    position: relative;
+    display: inline-block;
 }
 
 #SubmitAnnotation{
     background-color: #1a519e;
     color: white;
     border: 1px solid black;
-    margin:10px;
+    margin:5px;
     border-radius: 4px;
     font-size: 12px;
     cursor: pointer;
@@ -218,6 +219,16 @@ header .title {
     cursor: pointer;
 }
 
+.comments-section {
+    margin-top: 20px;
+    padding: 10px;
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+
+
 /* Footer */
 footer {
     grid-column: 1 / -1;
@@ -230,14 +241,4 @@ footer {
 .footer-content {
     font-size: 14px;
     
-}
-
-#time-series-graph-container {
-    position: relative;
-    /* border: 1px solid red; */
-    display: block;
-}
-
-#sankey-chart-container {
-    display: none;
 }

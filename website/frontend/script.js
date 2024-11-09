@@ -1,3 +1,5 @@
+
+
 /************************************************************************************** */
 
 // Toggle dropdown visibility
@@ -56,21 +58,62 @@ function populateSubsets() {
             subsetSelect.appendChild(option);
         });
     }
+    // Clear comments display if category changes
+    document.getElementById("comments").innerHTML = "";
 }
 
-// Toggle between Sankey chart and time series graph
-document.getElementById('importExportButton').addEventListener('click', function() {
-    const timeSeriesContainer = document.getElementById('time-series-graph-container');
-    const sankeyContainer = document.getElementById('sankey-chart-container');
-    
-    if (sankeyContainer.style.display === 'none' || sankeyContainer.style.display === '') {
-        // Show the Sankey chart and hide the time series graph
-        sankeyContainer.style.display = 'block';
-        timeSeriesContainer.style.display = 'none';
-    } else {
-        // Hide the Sankey chart and show the time series graph
-        sankeyContainer.style.display = 'none';
-        timeSeriesContainer.style.display = 'block';
+// Display comments when a subset is selected
+document.getElementById("subset").addEventListener("change", () => {
+    const category = document.getElementById("category").value;
+    const subset = document.getElementById("subset").value;
+
+    if (subset) {
+        displayComments(category, subset);
     }
 });
+
+// Save a comment to localStorage
+function saveComment(category, subset, comment) {
+    if (!category || !subset || !comment) {
+        alert("Please fill out all fields before submitting.");
+        return;
+    }
+
+    const key = `${category}-${subset}`;
+    let comments = JSON.parse(localStorage.getItem(key)) || [];
+    comments.push(comment);
+    localStorage.setItem(key, JSON.stringify(comments));
+    alert("Comment saved successfully!");
+    displayComments(category, subset); 
+}
+
+// Retrieve comments for a specific category and subset
+function getComments(category, subset) {
+    const key = `${category}-${subset}`;
+    const comments = JSON.parse(localStorage.getItem(key)) || [];
+    return comments;
+}
+
+// Display comments on the page for a specific category and subset
+function displayComments(category, subset) {
+    const comments = getComments(category, subset);
+    const commentsDiv = document.getElementById("comments");
+    
+    commentsDiv.innerHTML = "<strong>Comments:</strong><br>";
+    comments.forEach(comment => {
+        commentsDiv.innerHTML += `<p>${comment}</p>`;
+    });
+}
+
+// Function to handle comment submission from the form
+function submitAnnotation() {
+    const category = document.getElementById("category").value;
+    const subset = document.getElementById("subset").value;
+    const comment = document.getElementById("comment").value;
+
+    saveComment(category, subset, comment);
+    
+    // Clear the comment input field after submission
+    document.getElementById("comment").value = "";
+}
 
