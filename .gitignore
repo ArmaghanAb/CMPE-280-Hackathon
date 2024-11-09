@@ -1,3 +1,4 @@
-backend/env
+chat_backend/env
 __pycache__
 .DS_Store
+chat_backend/index_store
