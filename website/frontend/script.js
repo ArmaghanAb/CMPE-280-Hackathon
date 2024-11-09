@@ -1,182 +1,230 @@
-
-
 /************************************************************************************** */
 
-// Toggle dropdown visibility
-function toggleDropdown() {
-    const dropdown = document.getElementById("dropdownOptions");
-    // Toggle display between 'block' and 'none'
-    if (dropdown.style.display === "block") {
-        dropdown.style.display = "none";
-    } else {
-        dropdown.style.display = "block";
+// Declare global variables
+let selectedCountry = 'India';
+let selectedGraphId = '';
+
+
+
+// Store CSV data in a global object
+let csvData = {};
+
+// Load CSV files asynchronously
+function loadCSVData() {
+    const csvFiles = {
+        'gdp_usd': '/280_hackathon/website/backend/dataset/gdp_usd.csv',
+        'fdi_inflows': '/280_hackathon/website/backend/dataset/fdi_inflows.csv',
+        'fdi_outflows': '/280_hackathon/website/backend/dataset/fdi_outflows.csv',
+
+        'credit': '/280_hackathon/website/backend/dataset/gdp_percent.csv',
+        'agricultural_contribution': '/280_hackathon/website/backend/dataset/agricultural_contribution.csv',
+        'fertilizer_consumption_production': '/280_hackathon/website/backend/dataset/fertilizer_consumption_production.csv',
+        'fertilizer_consumption': '/280_hackathon/website/backend/dataset/fertilizer_consumption.csv',
+        
+        'reserves': '/280_hackathon/website/backend/dataset/debt_service.csv',
+        'gni': '/280_hackathon/website/backend/dataset/gni.csv',
+        'total_debts': '/280_hackathon/website/backend/dataset/total_debt.csv'
+        
+    };
+
+    // Fetch and parse each CSV file
+    for (let key in csvFiles) {
+        fetch(csvFiles[key])
+            .then(response => response.text())
+            .then(data => {
+                const parsedData = parseCSV(data);
+                csvData[key] = parsedData; // Store parsed data in the global csvData object
+            })
+            .catch(error => console.error(`Error loading CSV file ${key}:`, error));
     }
-    console.log("Dropdown toggled");
 }
 
-// Close dropdown if clicked outside
-window.addEventListener("click", function(event) {
-    const dropdown = document.getElementById("dropdownOptions");
-    const button = document.querySelector(".annotation-button");
-
-    // Only close the dropdown if it's open and the click is outside both the button and the dropdown
-    if (dropdown.style.display === "block" && !dropdown.contains(event.target) && !button.contains(event.target)) {
-        dropdown.style.display = "none";
-        console.log("Dropdown closed by outside click");
-    }
-});
-
-
-// Define subsets for each category
-const subsets = {
-    Macroeconomic: ["GDP (USD)", "FDI Inflows (USD)", "FDI Outflows (USD)"],
-    Agricultural: ["Contribution of Agri (% GDP)", "Credit", "Fertilizers", "Fertilizers PROD"],
-    "Debt Services": ["Reservers", "GNI", "Total Debts (%)"]
-};
-
-// Populate the subset dropdown based on the selected category
-function populateSubsets() {
-    const categorySelect = document.getElementById("category");
-    const subsetSelect = document.getElementById("subset");
-    const selectedCategory = categorySelect.value;
-
-    // Clear the subset dropdown
-    subsetSelect.innerHTML = "";
-
-    // Add default option
-    const defaultOption = document.createElement("option");
-    defaultOption.value = "";
-    defaultOption.textContent = "Choose a subset";
-    subsetSelect.appendChild(defaultOption);
-
-    // If a category is selected, add corresponding subsets
-    if (subsets[selectedCategory]) {
-        subsets[selectedCategory].forEach(subset => {
-            const option = document.createElement("option");
-            option.value = subset;
-            option.textContent = subset;
-            subsetSelect.appendChild(option);
+// Parse CSV data into a usable format
+function parseCSV(csvText) {
+    const rows = csvText.split("\n");
+    const headers = rows[0].split(",");
+    const data = rows.slice(1).map(row => {
+        const values = row.split(",");
+        let obj = {};
+        headers.forEach((header, index) => {
+            obj[header.trim()] = values[index].trim();
         });
-    }
-    // Clear comments display if category changes
-    document.getElementById("comments").innerHTML = "";
+        return obj;
+    });
+    return data;
 }
 
-// Display comments when a subset is selected
-document.getElementById("subset").addEventListener("change", () => {
-    const category = document.getElementById("category").value;
-    const subset = document.getElementById("subset").value;
+// Store selected country
+function updateCountry() {
+    selectedCountry = document.getElementById('country-selector').value;
+    document.getElementById('country-flag').style.display = selectedCountry ? 'inline' : 'none';
+}
 
-    if (subset) {
-        displayComments(category, subset);
-    }
-});
+// Allow drop on the chart area
+function allowDrop(event) {
+    event.preventDefault();
+}
 
-// Save a comment to localStorage
-function saveComment(category, subset, comment) {
-    if (!category || !subset || !comment) {
-        alert("Please fill out all fields before submitting.");
+// Handle drag event
+function drag(event) {
+    // Store the ID of the dragged item (graph type)
+    event.dataTransfer.setData("text", event.target.id);
+    console.log("Dragging", event.target.id);
+    
+
+    selectedGraphId = event.dataTransfer.getData("text");
+    generateGraph();
+}
+
+// Handle drop event
+function drop(event) {
+    event.preventDefault();
+    selectedGraphId = event.dataTransfer.getData("text");
+    console.log("Dropping", event.target.id);
+
+    // Ensure a valid country and graph are selected
+    if (!selectedCountry || !selectedGraphId) {
+        alert("Please select a country and a graph type.");
         return;
     }
 
-    const key = `${category}-${subset}`;
-    let comments = JSON.parse(localStorage.getItem(key)) || [];
-    comments.push(comment);
-    localStorage.setItem(key, JSON.stringify(comments));
-    alert("Comment saved successfully!");
-    displayComments(category, subset); 
+    // Call function to generate graph
+    generateGraph();
 }
 
-// Retrieve comments for a specific category and subset
-function getComments(category, subset) {
-    const key = `${category}-${subset}`;
-    const comments = JSON.parse(localStorage.getItem(key)) || [];
-    return comments;
-}
+// Generate the Plotly graph
+function generateGraph() {
+    // Get the selected CSV data based on the graphId
+    const data = csvData[selectedGraphId];
+    if (!data) {
+        alert("Graph data not found.");
+        return;
+    }
 
-// Display comments on the page for a specific category and subset
-function displayComments(category, subset) {
-    const comments = getComments(category, subset);
-    const commentsDiv = document.getElementById("comments");
-    
-    commentsDiv.innerHTML = "<strong>Comments:</strong><br>";
-    comments.forEach(comment => {
-        commentsDiv.innerHTML += `<p>${comment}</p>`;
-    });
-}
+    // Filter data based on the selected country
+    const countryData = data.filter(row => row.Country === selectedCountry);
 
-// Function to handle comment submission from the form
-function submitAnnotation() {
-    const category = document.getElementById("category").value;
-    const subset = document.getElementById("subset").value;
-    const comment = document.getElementById("comment").value;
+    // If country data is found, create the graph
+    if (countryData.length > 0) {
+        const years = Object.keys(countryData[0]).filter(key => key !== 'Country');
+        const timeSeriesData = years.map(year => parseFloat(countryData[0][year]));
 
-    saveComment(category, subset, comment);
-    
-    // Clear the comment input field after submission
-    document.getElementById("comment").value = "";
-}
+        // Create a Plotly graph
+        const trace = {
+            x: years,
+            y: timeSeriesData,
+            mode: 'lines+markers',
+            name: selectedCountry
+        };
 
+        const layout = {
+            title: `Time Series Data for ${selectedCountry}`,
+            xaxis: { title: 'Year' },
+            yaxis: { title: 'Y-Axis' },
+            template: 'plotly_dark'
+        };
 
-
-// Chat UI functions 
-function toggleChat() {
-    const modal = document.getElementById('chatModal');
-    modal.classList.toggle('show-modal');
-}
-
-function handleKeyPress(event) {
-    if (event.key === 'Enter') {
-        askQuestion();
+        // Render the Plotly graph
+        document.querySelector('#chart-drop-area').innerHTML = '';
+        Plotly.newPlot('chart-drop-area', [trace], layout);
+    } else {
+        alert("No data found for the selected country.");
     }
 }
 
-async function askQuestion() {
-    const inputElement = document.getElementById("user-input");
-    const question = inputElement.value.trim();
-    if (question === "") return;
 
-    const chatBox = document.getElementById("chat-box");
-    const userBubble = document.createElement("div");
-    userBubble.className = "chat-bubble user-bubble";
-    userBubble.textContent = question;
-    chatBox.appendChild(userBubble);
+// Function to generate graph for a specific year
+function animateGraph(yearIndex) {
+    // Get the selected CSV data based on the graphId
+    const data = csvData[selectedGraphId];
+    if (!data) {
+        alert("Graph data not found.");
+        return;
+    }
 
-    inputElement.value = "";
+    // Filter data based on the selected country
+    const countryData = data.filter(row => row.Country === selectedCountry);
 
-    const botBubble = document.createElement("div");
-    botBubble.className = "chat-bubble bot-bubble";
-    botBubble.textContent = "Thinking....";
-    chatBox.appendChild(botBubble);
+    // If country data is found, create the graph
+    if (countryData.length > 0) {
+        const years = Object.keys(countryData[0]).filter(key => key !== 'Country');
+        const timeSeriesData = years.map(year => parseFloat(countryData[0][year]));
 
-    chatBox.scrollTop = chatBox.scrollHeight;
+        // Limit the data to the current year
+        const currentYearData = timeSeriesData.slice(0, yearIndex + 1);
+        let currentYears = years.slice(0, yearIndex + 1);
 
-    try {
-        const response = await fetch("http://127.0.0.1:8000/query", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ question: question }),
-        });
+        // Create a Plotly graph
+        const trace = {
+            x: currentYears,
+            y: currentYearData,
+            mode: 'lines+markers',
+            name: selectedCountry
+        };
 
-        const reader = response.body.getReader();
-        const decoder = new TextDecoder("utf-8");
+        const layout = {
+            title: `Time Series Data for ${selectedCountry}`,
+            xaxis: { title: 'Year' },
+            yaxis: { title: 'Y-Axis' },
+            template: 'plotly_dark'
+        };
 
-        while (true) {
-            const { done, value } = await reader.read();
-            if (done) break;
+        // Render the Plotly graph
+        document.querySelector('#chart-drop-area').innerHTML = '';
+        Plotly.newPlot('chart-drop-area', [trace], layout);
+        console.log(currentYears);
+        document.querySelector('#time-slider').value = currentYears[currentYears.length-1];
+    } else {
+        alert("No data found for the selected country.");
+    }
+}
 
-            const chunk = decoder.decode(value, { stream: true });
-            if (botBubble.textContent === "Thinking....") {
-                botBubble.textContent = '';
-            }
-            botBubble.textContent += chunk;
 
-            chatBox.scrollTop = chatBox.scrollHeight;
+// Initialize by loading CSV files
+loadCSVData();
+
+
+
+// Event listener for the Play button
+document.querySelector('.play-button').addEventListener('click', () => {
+    if (isPlaying) {
+        stopAnimation(); // If already playing, stop the animation
+    } else {
+        console.log("play clicked");
+        startAnimation(); // Start the animation
+    }
+});
+
+const years = 1960;
+let currentYearIndex = 0;
+let intervalId;
+let isPlaying = false;
+
+// Function to start the animation
+function startAnimation() {
+    if (isPlaying) return; // Prevent multiple clicks
+
+    isPlaying = true;
+    currentYearIndex = 0;  // Reset to the first year (1960)
+
+    // Start the animation: update every 100ms
+    intervalId = setInterval(() => {
+        // Generate the graph with the current year
+        animateGraph(currentYearIndex);
+
+        // Increment year index
+        currentYearIndex++;
+
+        // Stop the animation when we reach 2024
+        if (currentYearIndex > years.length) {
+            clearInterval(intervalId);
+            isPlaying = false;
         }
-    } catch (error) {
-        console.error("Error fetching response:", error);
-        botBubble.textContent = "An error occurred. Please try again.";
-    }
+    }, 100); // Update every 100ms
+}
 
-    chatBox.scrollTop = chatBox.scrollHeight;
+// Function to stop the animation
+function stopAnimation() {
+    clearInterval(intervalId);
+    isPlaying = false;
 }
