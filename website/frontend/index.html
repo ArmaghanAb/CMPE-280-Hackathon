@@ -33,11 +33,12 @@
                 <li draggable="true" ondragstart="drag(event)" id="total-debts">Total Debts (%)</li>
             </ul>
 
-            <button class="import-export" id="importExportButton">Import-Export</button>
+            <button class="import-export">Import-Export</button>
         </div>
 
         <!-- Main Content -->
         <div class="main-content">
+
             <header>
                 <div class="title">Macroeconomic Researcher Food Security Time Series and Large Language Chat GPT Dashboard</div>
                 <select id="country-selector" onchange="updateCountry()">
@@ -49,20 +50,22 @@
                 <img id="country-flag" src="" alt="Country Flag" style="width: 40px; height: 25px; display: none;">
             </header>
            
-            <div id="time-series-graph-container">
-                <!-- Time Slider and Play Button -->
-                <div class="time-slider-container">
-                    <label for="time-slider">Years</label>
-                    <input type="range" id="time-slider" min="1990" max="2024" step="1" value="1990">
-                    <button class="play-button" onclick="togglePlay()">▶️</button>
-                </div>
 
-                <!-- Chart Drop Area -->
-                <div class="charts" id="chart-drop-area" ondrop="drop(event)" ondragover="allowDrop(event)">
-                    Time Series Chart
-                </div>
+            <!-- Time Slider and Play Button -->
+            <div class="time-slider-container">
+                <label for="time-slider">Years</label>
+                <input type="range" id="time-slider" min="1990" max="2024" step="1" value="1990">
+                <button class="play-button" onclick="togglePlay()">▶️</button>
+            </div>
 
-                <!-- Annotation Dropdown -->
+            <!-- Chart Drop Area -->
+            <div class="charts" id="chart-drop-area" ondrop="drop(event)" ondragover="allowDrop(event)">
+                
+            </div>
+
+                <!-- GPT Icon -->
+                <img id= "gptIcon" src="Images/gpt .png" alt="GPT Icon">
+           
                 <div class="annotation-dropdown">
                     <!-- Annotation Button -->
                     <button class="annotation-button" onclick="toggleDropdown()">Annotation</button>
@@ -85,17 +88,16 @@
                         <label for="comment">Comment:</label>
                         <textarea id="comment" placeholder="Write your comment here"></textarea>
                 
-                        <button id = "SubmitAnnotation" onclick="submitAnnotation()">Submit</button>
+                        <button id = "SubmitAnnotation" type="button" onclick="submitAnnotation()">Submit</button>
                     </div>
                 </div>
-            </div>
 
-            <div id="sankey-chart-container">
-                Sankey Chart
+                <!-- Comments Display Area -->
+            <div id="comments" class="comments-section">
+                <strong>Comments:</strong>
+                <!-- Comments will be dynamically inserted here -->
             </div>
-
-            <!-- GPT Icon -->
-            <img id= "gptIcon" src="Images/gpt .png" alt="GPT Icon">
+            
         </div>
 
         <!-- Footer -->
