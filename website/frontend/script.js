@@ -80,7 +80,7 @@ async function loadSankeyData() {
     const crop = document.getElementById("crop-selector").value;
 
     if (!country || !year || !crop) {
-        alert("Please select a country, year, and crop.");
+        // alert("Please select a country, year, and crop.");
         return;
     }
 
@@ -88,6 +88,22 @@ async function loadSankeyData() {
     const response = await fetch(`http://localhost:8000/sankey-data?country=${country}&year=${year}&crop=${crop}`);
     const data = await response.json();
 
+    // Function to generate a distinct color for each node
+    function generateColor(index, totalNodes) {
+        const hue = (index * 360) / totalNodes; // Evenly distribute hues
+        return `hsl(${hue}, 70%, 50%)`;
+    }
+
+    // Total number of nodes (source + targets)
+    const totalNodes = data.target.length + 1;
+
+    // Generate colors for all nodes
+    const nodeColors = ["lightblue"];
+    for (let i = 0; i < totalNodes; i++) {
+        nodeColors.push(generateColor(i, totalNodes));
+    }
+
+    // Define the Sankey data
     const sankeyData = {
         type: "sankey",
         orientation: "h",
@@ -99,11 +115,11 @@ async function loadSankeyData() {
                 width: 0.5
             },
             label: [country, ...data.target],
-            color: "blue"
+            color: nodeColors // Assign the generated colors
         },
         link: {
-            source: Array(data.target.length).fill(0),  // All links start from index 0 (the selected country)
-            target: data.target.map((_, i) => i + 1),   // Target nodes start from index 1 onwards
+            source: Array(data.target.length).fill(0),
+            target: data.target.map((_, i) => i + 1),
             value: data.value
         }
     };
@@ -115,11 +131,12 @@ async function loadSankeyData() {
         }
     };
 
-    Plotly.newPlot("sankey-chart-container", [sankeyData], layout);
+    Plotly.newPlot("sankey-chart", [sankeyData], layout);
 }
 
 // Event listener for updating the chart
-document.getElementById("country-selector").addEventListener("change", loadSankeyData);
+document.getElementById("two-country-selector").addEventListener("change", loadSankeyData);
 document.getElementById("year-selector").addEventListener("change", loadSankeyData);
 document.getElementById("crop-selector").addEventListener("change", loadSankeyData);
+
 
