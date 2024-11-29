@@ -85,6 +85,7 @@ body {
     display: flex;
     flex-direction: column;
     padding: 20px;
+    height: 90vh;
 }
 
 header {
@@ -123,7 +124,7 @@ header .title {
 }
 
 #time-slider {
-    width: 80%;
+    width: 60%;
     margin-right: 10px;
 }
 
@@ -142,7 +143,7 @@ header .title {
     flex-grow: 1;
     margin-top: 20px;
     padding: 20px;
-   min-height: 100hv;
+   min-height: 70vh;
 }
 
 /* Annotation Button */
@@ -180,8 +181,8 @@ header .title {
 .dropdown-content {
     display: none;
     position: absolute;
-    bottom:60px;
-    left: 730px;
+    top:200px;
+    right: 50px;
     background-color: rgb(207, 198, 198);
     width: 250px; min-height:200px;
     padding: 15px;

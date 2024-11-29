@@ -1,6 +1,14 @@
 /************************************************************************************** */
 
-// Toggle dropdown visibility
+// Declare global variables
+let selectedCountry = 'India';
+let selectedGraphId = '';
+
+
+
+// Store CSV data in a global object
+let csvData = {};
+
 function toggleDropdown() {
     const dropdown = document.getElementById("dropdownOptions");
     // Toggle display between 'block' and 'none'
@@ -12,7 +20,6 @@ function toggleDropdown() {
     console.log("Dropdown toggled");
 }
 
-// Close dropdown if clicked outside
 window.addEventListener("click", function(event) {
     const dropdown = document.getElementById("dropdownOptions");
     const button = document.querySelector(".annotation-button");
@@ -70,6 +77,85 @@ document.getElementById("subset").addEventListener("change", () => {
     }
 });
 
+
+// Load CSV files asynchronously
+function loadCSVData() {
+    const csvFiles = {
+        'gdp_usd': '../backend/dataset/gdp_usd.csv',
+        'fdi_inflows': '../backend/dataset/fdi_inflows.csv',
+        'fdi_outflows': '../backend/dataset/fdi_outflows.csv',
+
+        'credit': '../backend/dataset/gdp_percent.csv',
+        'agricultural_contribution': '../backend/dataset/agricultural_contribution.csv',
+        'fertilizer_consumption_production': '../backend/dataset/fertilizer_consumption_production.csv',
+        'fertilizer_consumption': '../backend/dataset/fertilizer_consumption.csv',
+        
+        'reserves': '../backend/dataset/debt_service.csv',
+        'gni': '../backend/dataset/gni.csv',
+        'total_debts': '../backend/dataset/total_debt.csv'
+        
+    };
+
+    // Fetch and parse each CSV file
+    for (let key in csvFiles) {
+        fetch(csvFiles[key])
+            .then(response => response.text())
+            .then(data => {
+                const parsedData = parseCSV(data);
+                csvData[key] = parsedData; // Store parsed data in the global csvData object
+            })
+            .catch(error => console.error(`Error loading CSV file ${key}:`, error));
+    }
+}
+
+// Parse CSV data into a usable format
+function parseCSV(csvText) {
+    const rows = csvText.split("\n");
+    const headers = rows[0].split(",");
+    const data = rows.slice(1).map(row => {
+        const values = row.split(",");
+        let obj = {};
+        headers.forEach((header, index) => {
+            obj[header.trim()] = values[index].trim();
+        });
+        return obj;
+    });
+    return data;
+}
+
+// Store selected country
+function updateCountry() {
+    selectedCountry = document.getElementById('country-selector').value;
+    document.getElementById('country-flag').style.display = selectedCountry ? 'inline' : 'none';
+}
+
+// Allow drop on the chart area
+function allowDrop(event) {
+    event.preventDefault();
+}
+
+// Handle drag event
+function drag(event) {
+    // Store the ID of the dragged item (graph type)
+    event.dataTransfer.setData("text", event.target.id);
+    console.log("Dragging", event.target.id);
+    
+
+    selectedGraphId = event.dataTransfer.getData("text");
+    generateGraph();
+}
+
+// Handle drop event
+function drop(event) {
+    event.preventDefault();
+    selectedGraphId = event.dataTransfer.getData("text");
+    console.log("Dropping", event.target.id);
+
+    // Ensure a valid country and graph are selected
+    if (!selectedCountry || !selectedGraphId) {
+        alert("Please select a country and a graph type.");
+    }
+}
 async function loadGraphs() {
     const country = document.getElementById("two-country-selector").value;
     const year = document.getElementById("year-selector").value;
@@ -81,7 +167,7 @@ async function loadGraphs() {
     }
 
     console.log("Selected Values:", country, year, crop);
-    const response = await fetch(`http://localhost:8000/sankey-data?country=${country}&year=${year}&crop=${crop}`);
+    const response = await fetch(`http://localhost:8801/sankey-data?country=${country}&year=${year}&crop=${crop}`);
     const data = await response.json();
 
     // Function to generate a distinct color for each node
@@ -205,45 +291,165 @@ function saveComment(category, subset, comment) {
         return;
     }
 
-    const key = `${category}-${subset}`;
-    let comments = JSON.parse(localStorage.getItem(key)) || [];
-    comments.push(comment);
-    localStorage.setItem(key, JSON.stringify(comments));
-    alert("Comment saved successfully!");
-    displayComments(category, subset); 
+    // Call function to generate graph
+    generateGraph();
 }
 
-// Retrieve comments for a specific category and subset
-function getComments(category, subset) {
-    const key = `${category}-${subset}`;
-    const comments = JSON.parse(localStorage.getItem(key)) || [];
-    return comments;
+// Generate the Plotly graph
+function generateGraph() {
+    // Get the selected CSV data based on the graphId
+    const data = csvData[selectedGraphId];
+    if (!data) {
+        alert("Graph data not found.");
+        return;
+    }
+
+    // Filter data based on the selected country
+    const countryData = data.filter(row => row.Country === selectedCountry);
+
+    // If country data is found, create the graph
+    if (countryData.length > 0) {
+        const years = Object.keys(countryData[0]).filter(key => key !== 'Country');
+        const timeSeriesData = years.map(year => parseFloat(countryData[0][year]));
+
+        // Create a Plotly graph
+        const trace = {
+            x: years,
+            y: timeSeriesData,
+            mode: 'lines+markers',
+            name: selectedCountry
+        };
+
+        const layout = {
+            title: `Time Series ${selectedGraphId.split("_").join(" ").toUpperCase()} Data for ${selectedCountry}`,
+            xaxis: { title: 'Year' },
+            yaxis: { title: 'Y-Axis' },
+            template: 'plotly_dark'
+        };
+
+        // Render the Plotly graph
+        document.querySelector('#chart-drop-area').innerHTML = '';
+        Plotly.newPlot('chart-drop-area', [trace], layout);
+    } else {
+        alert("No data found for the selected country.");
+    }
 }
 
-// Display comments on the page for a specific category and subset
-function displayComments(category, subset) {
-    const comments = getComments(category, subset);
-    const commentsDiv = document.getElementById("comments");
+
+// Function to generate graph for a specific year
+function animateGraph(yearIndex) {
+    // Get the selected CSV data based on the graphId
+    const data = csvData[selectedGraphId];
+    if (!data) {
+        alert("Graph data not found.");
+        return;
+    }
+
+    // Filter data based on the selected country
+    const countryData = data.filter(row => row.Country === selectedCountry);
+
+    // If country data is found, create the graph
+    if (countryData.length > 0) {
+        const years = Object.keys(countryData[0]).filter(key => key !== 'Country');
+        const timeSeriesData = years.map(year => parseFloat(countryData[0][year]));
+
+        // Limit the data to the current year
+        const currentYearData = timeSeriesData.slice(0, yearIndex + 1);
+        let currentYears = years.slice(0, yearIndex + 1);
+
+        // Create a Plotly graph
+        const trace = {
+            x: currentYears,
+            y: currentYearData,
+            mode: 'lines+markers',
+            name: selectedCountry
+        };
+
+        const layout = {
+            title: `Time Series Data for ${selectedCountry}`,
+            xaxis: { title: 'Year' },
+            yaxis: { title: 'Y-Axis' },
+            template: 'plotly_dark'
+        };
+
+        // Render the Plotly graph
+        document.querySelector('#chart-drop-area').innerHTML = '';
+        Plotly.newPlot('chart-drop-area', [trace], layout);
+        console.log(currentYears);
+        document.querySelector('#time-slider').value = currentYears[currentYears.length-1];
+    } else {
+        alert("No data found for the selected country.");
+    }
+}
+
+
+// Initialize by loading CSV files
+loadCSVData();
+
+
+
+// Event listener for the Play button
+document.querySelector('.play-button').addEventListener('click', () => {
+    if (isPlaying) {
+        stopAnimation(); // If already playing, stop the animation
+    } else {
+        console.log("play clicked");
+        startAnimation(); // Start the animation
+    }
+});
+
+const years = 1960;
+let currentYearIndex = 0;
+let intervalId;
+let isPlaying = false;
+
+// Function to start the animation
+function startAnimation() {
+    if (isPlaying) return; // Prevent multiple clicks
+
+    isPlaying = true;
+    currentYearIndex = 0;  // Reset to the first year (1960)
+
+    // Start the animation: update every 100ms
+    intervalId = setInterval(() => {
+        // Generate the graph with the current year
+        animateGraph(currentYearIndex);
+
+        // Increment year index
+        currentYearIndex++;
+
+        // Stop the animation when we reach 2024
+        if (currentYearIndex > years.length) {
+            clearInterval(intervalId);
+            isPlaying = false;
+        }
+    }, 100); // Update every 100ms
+}
+
+// Function to stop the animation
+function stopAnimation() {
+    clearInterval(intervalId);
+    isPlaying = false;
+}
+// Toggle between Sankey chart and time series graph
+document.getElementById('importExportButton').addEventListener('click', function() {
+    const timeSeriesContainer = document.getElementById('time-series-graph-container');
+    const sankeyContainer = document.getElementById('sankey-chart-container');
     
-    commentsDiv.innerHTML = "<strong>Comments:</strong><br>";
-    comments.forEach(comment => {
-        commentsDiv.innerHTML += `<p>${comment}</p>`;
-    });
-}
-
-// Function to handle comment submission from the form
-function submitAnnotation() {
-    const category = document.getElementById("category").value;
-    const subset = document.getElementById("subset").value;
-    const comment = document.getElementById("comment").value;
-
-    saveComment(category, subset, comment);
-    
-    // Clear the comment input field after submission
-    document.getElementById("comment").value = "";
-}
-
-
+    if (sankeyContainer.style.display === 'none' || sankeyContainer.style.display === '') {
+        // Show the Sankey chart and hide the time series graph
+        sankeyContainer.style.display = 'block';
+        timeSeriesContainer.style.display = 'none';
+        document.querySelector("#country-selector").style.display = 'none';
+        document.querySelector(".sidebar-ul").style.display = 'none';
+    } else {
+        // Hide the Sankey chart and show the time series graph
+        sankeyContainer.style.display = 'none';
+        timeSeriesContainer.style.display = 'block';
+        document.querySelector("#country-selector").style.display = 'block';
+        document.querySelector(".sidebar-ul").style.display = 'block';
+    }
+});
 
 // Chat UI functions 
 function toggleChat() {
@@ -306,19 +512,47 @@ async function askQuestion() {
 
     chatBox.scrollTop = chatBox.scrollHeight;
 }
-// Toggle between Sankey chart and time series graph
-document.getElementById('importExportButton').addEventListener('click', function() {
-    const timeSeriesContainer = document.getElementById('time-series-graph-container');
-    const sankeyContainer = document.getElementById('sankey-chart-container');
-    
-    if (sankeyContainer.style.display === 'none' || sankeyContainer.style.display === '') {
-        // Show the Sankey chart and hide the time series graph
-        sankeyContainer.style.display = 'block';
-        timeSeriesContainer.style.display = 'none';
-    } else {
-        // Hide the Sankey chart and show the time series graph
-        sankeyContainer.style.display = 'none';
-        timeSeriesContainer.style.display = 'block';
-    }
-});
 
+function saveComment(category, subset, comment) {
+    if (!category || !subset || !comment) {
+        alert("Please fill out all fields before submitting.");
+        return;
+    }
+
+    const key = `${category}-${subset}`;
+    let comments = JSON.parse(localStorage.getItem(key)) || [];
+    comments.push(comment);
+    localStorage.setItem(key, JSON.stringify(comments));
+    alert("Comment saved successfully!");
+    displayComments(category, subset); 
+}
+
+// Retrieve comments for a specific category and subset
+function getComments(category, subset) {
+    const key = `${category}-${subset}`;
+    const comments = JSON.parse(localStorage.getItem(key)) || [];
+    return comments;
+}
+
+// Display comments on the page for a specific category and subset
+function displayComments(category, subset) {
+    const comments = getComments(category, subset);
+    const commentsDiv = document.getElementById("comments");
+    
+    commentsDiv.innerHTML = "<strong>Comments:</strong><br>";
+    comments.forEach(comment => {
+        commentsDiv.innerHTML += `<p>${category}, ${subset}: ${comment}</p>`;
+    });
+}
+
+// Function to handle comment submission from the form
+function submitAnnotation() {
+    const category = document.getElementById("category").value;
+    const subset = document.getElementById("subset").value;
+    const comment = document.getElementById("comment").value;
+
+    saveComment(category, subset, comment);
+    
+    // Clear the comment input field after submission
+    document.getElementById("comment").value = "";
+}

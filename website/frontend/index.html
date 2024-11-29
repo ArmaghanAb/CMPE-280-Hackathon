@@ -13,26 +13,30 @@
     <div class="dashboard">
         <!-- Sidebar -->
         <div class="sidebar"  id="sidebar">
-            <div class="logo">Logo</div>
-            <h2>Macroeconomic (USD)</h2>
-            <ul>
-                <li draggable="true" ondragstart="drag(event)" id="gdp">GDP (USD)</li>
-                <li draggable="true" ondragstart="drag(event)" id="fdi-inflows">FDI Inflows (USD)</li>
-                <li draggable="true" ondragstart="drag(event)" id="fdi-outflows">FDI Outflows (USD)</li>
-            </ul>
-            <h2>Agricultural</h2>
-            <ul>
-                <li draggable="true" ondragstart="drag(event)" id="agri-contribution">Contribution of Agri (% GDP)</li>
-                <li draggable="true" ondragstart="drag(event)" id="credit">Credit</li>
-                <li draggable="true" ondragstart="drag(event)" id="fertilizers">Fertilizers</li>
-                <li draggable="true" ondragstart="drag(event)" id="fertilizers-prod">Fertilizers PROD</li>
-            </ul>
-            <h2>Debt Services</h2>
-            <ul>
-                <li draggable="true" ondragstart="drag(event)" id="reservers">Reservers</li>
-                <li draggable="true" ondragstart="drag(event)" id="gni">GNI</li>
-                <li draggable="true" ondragstart="drag(event)" id="total-debts">Total Debts (%)</li>
-            </ul>
+            <div class="sidebar-ul">
+                <div class="logo">FAO</div>
+                <h2>Macroeconomic (USD)</h2>
+                <ul>
+                    <li draggable="true" ondragstart="drag(event)" id="gdp_usd">GDP (USD)</li>
+                    <li draggable="true" ondragstart="drag(event)" id="fdi_inflows">FDI Inflows (USD)</li>
+                    <li draggable="true" ondragstart="drag(event)" id="fdi_outflows">FDI Outflows (USD)</li>
+                </ul>
+                <h2>Agricultural</h2>
+                <ul>
+                    <li draggable="true" ondragstart="drag(event)" id="agricultural_contribution">Contribution of Agri (% GDP)</li>
+                    <li draggable="true" ondragstart="drag(event)" id="credit">Credit</li>
+                    <li draggable="true" ondragstart="drag(event)" id="fertilizer_consumption">Fertilizers</li>
+                    <li draggable="true" ondragstart="drag(event)" id="fertilizer_consumption_production">Fertilizers PROD</li>
+                </ul>
+                <h2>Debt Services</h2>
+                <ul>
+                    <li draggable="true" ondragstart="drag(event)" id="reserves">Reserves</li>
+                    <li draggable="true" ondragstart="drag(event)" id="gni">GNI</li>
+                    <li draggable="true" ondragstart="drag(event)" id="total_debts">Total Debts (%)</li>
+                </ul>
+            </div>
+            
+           
 
             <button class="import-export" id="importExportButton">Import-Export</button>
         </div>
@@ -42,49 +46,25 @@
             <header>
                 <div class="title">Macroeconomic Researcher Food Security Time Series and Large Language Chat GPT Dashboard</div>
                 <select id="country-selector" onchange="updateCountry()">
-                    <option value="">Select Country</option>
+                    <!-- <option value="">Select Country</option> -->
                     <option value="China">China</option>
-                    <option value="India">India</option>
+                    <option value="India" selected="selected">India</option>
                     <option value="USA">USA</option>
                 </select>
-                <img id="country-flag" src="" alt="Country Flag" style="width: 40px; height: 25px; display: none;">
             </header>
            
             <div id="time-series-graph-container">
                 <!-- Time Slider and Play Button -->
                 <div class="time-slider-container">
                     <label for="time-slider">Years</label>
-                    <input type="range" id="time-slider" min="1990" max="2024" step="1" value="1990">
-                    <button class="play-button" onclick="togglePlay()">▶️</button>
+                    <input type="range" id="time-slider" min="1960" max="2023" step="1" value="1960">
+                    <button class="play-button">▶️</button>
                 </div>
 
                 <!-- Chart Drop Area -->
                 <div class="charts" id="chart-drop-area" ondrop="drop(event)" ondragover="allowDrop(event)">
                     Time Series Chart
                 </div>
-
-            <!-- Chart Drop Area -->
-            <div class="charts" id="chart-drop-area" ondrop="drop(event)" ondragover="allowDrop(event)">
-                
-            </div>
-
-               <!-- Insert Chat Interface here -->
-            <div class="chat-icon" onclick="toggleChat()">
-                <img src="./Images/gpt.png" width="30" height="30" alt="GPT Icon">
-            </div>
-
-            <div class="chat-modal" id="chatModal">
-                <div class="modal-header">
-                    <h3>FAO Q&A Assistant</h3>
-                    <button class="close-btn" onclick="toggleChat()">X</button>
-                </div>
-                <div class="chat-box" id="chat-box"></div>
-                <div class="chat-input">
-                    <input type="text" id="user-input" placeholder="Type your message..." onkeypress="handleKeyPress(event)">
-                    <button class="send-btn" onclick="askQuestion()">></button>
-                </div>
-            </div>
-           
                 <!-- Annotation Dropdown -->
                 <div class="annotation-dropdown">
                     <!-- Annotation Button -->
@@ -108,17 +88,34 @@
                         <label for="comment">Comment:</label>
                         <textarea id="comment" placeholder="Write your comment here"></textarea>
                 
-                        <button id = "SubmitAnnotation" type="button" onclick="submitAnnotation()">Submit</button>
+                        <button id = "SubmitAnnotation" onclick="submitAnnotation()">Submit</button>
                     </div>
                 </div>
                                 <!-- Comments Display Area -->
-            <div id="comments" class="comments-section">
-                <strong>Comments:</strong>
-                <!-- Comments will be dynamically inserted here -->
+                <div id="comments" class="comments-section">
+                    <strong>Comments:</strong>
+                    <!-- Comments will be dynamically inserted here -->
+                </div>
+               
+            </div>
+            <!-- Insert Chat Interface here -->
+            <div class="chat-icon" onclick="toggleChat()">
+                <img src="./Images/gpt.png" width="30" height="30" alt="GPT Icon">
             </div>
 
+            <div class="chat-modal" id="chatModal">
+                <div class="modal-header">
+                    <h3>FAO Q&A Assistant</h3>
+                    <button class="close-btn" onclick="toggleChat()">X</button>
+                </div>
+                <div class="chat-box" id="chat-box"></div>
+                <div class="chat-input">
+                    <input type="text" id="user-input" placeholder="Type your message..." onkeypress="handleKeyPress(event)">
+                    <button class="send-btn" onclick="askQuestion()">></button>
+                </div>
             </div>
-            
+           
+
             <div id="sankey-chart-container">
                 <label for="two-country-selector">Select Country:</label>
                 <select id="two-country-selector">
@@ -155,19 +152,19 @@
             <!-- <img id= "gptIcon" src="Images/gpt .png" alt="GPT Icon"> -->
 
             
-        </div>
 
         <!-- Footer -->
-        <footer>
-            <div class="footer-content">
-                Footer  
-             
-            </div>
-        </footer>
-    </div>
+            <footer>
+                <div class="footer-content">
+                    Footer  
+                
+                </div>
+            </footer>
+        </div>
     
 
-    <script src="script.js"></script>
+    <script src="./script.js"></script>
 
+    
 </body>
 </html>
