@@ -74,15 +74,15 @@ This project is a **Macroeconomic Researcher Dashboard** designed as a "Hackatho
    pip install -r requirements.txt
 
 4. Set Up the OpenAI API Key: Create a .env file in the root of the repository and add your OpenAI API key:
-  ```env
-  OPENAI_API_KEY=your-api-key
+    ```env
+    OPENAI_API_KEY=your-api-key
 
 5. Run the Backend Server: Start the backend server locally:
-   ```bash
-   uvicorn main:app --reload
+     ```bash
+     uvicorn main:app --reload
 
 6. Open the Frontend:
-  ```
-  Open the index.html file in your browser, or
-  Serve the frontend files locally using a live server (e.g., the Live Server VSCode extension).
+  
+      Open the index.html file in your browser, or
+      Serve the frontend files locally using a live server (e.g., the Live Server VSCode extension).
 
