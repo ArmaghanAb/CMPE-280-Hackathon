@@ -1,6 +1,6 @@
 # Macroeconomic Researcher Dashboard
 
-This project is a **Macroeconomic Researcher Dashboard** designed as a "Hackathon for Web development Course (CMPE 280-SJSU)" to provide a user-friendly interface for analyzing time-series data and visualizations related to macroeconomic, agricultural, and debt service indicators. The dashboard also integrates **AI-driven insights** using the **OpenAI API** to enhance the user experience.
+This project is a **Macroeconomic Researcher Dashboard** designed as a "Hackathon for Web Development Course (CMPE 280-SJSU)" to provide a user-friendly interface for analyzing time-series data and visualizations related to macroeconomic, agricultural, and debt service indicators. The dashboard also integrates **AI-driven insights** using the **OpenAI API** to enhance the user experience.
 
 ---
 
@@ -65,29 +65,29 @@ This project is a **Macroeconomic Researcher Dashboard** designed as a "Hackatho
    cd macro-dashboard
 
 2. Set Up a Virtual Environment:
-
- ```bash
-python -m venv env
-source env/bin/activate   # On Windows: env\Scripts\activate
+  
+    ```bash
+    python -m venv env
+    source env/bin/activate   # On Windows: env\Scripts\activate
 
 3. Install Backend Dependencies:
 
- ```bash
-pip install -r requirements.txt
+   ```bash
+  pip install -r requirements.txt
 
 4. Set Up the OpenAI API Key: Create a .env file in the root of the repository and add your OpenAI API key:
 
-env
-
-OPENAI_API_KEY=your-api-key
+  env
+  
+  OPENAI_API_KEY=your-api-key
 
 5. Run the Backend Server: Start the backend server locally:
 
- ```bash
-uvicorn main:app --reload
+   ```bash
+  uvicorn main:app --reload
 
 6. Open the Frontend:
 
-Open the index.html file in your browser, or
-Serve the frontend files locally using a live server (e.g., the Live Server VSCode extension).
+  Open the index.html file in your browser, or
+  Serve the frontend files locally using a live server (e.g., the Live Server VSCode extension).
 
